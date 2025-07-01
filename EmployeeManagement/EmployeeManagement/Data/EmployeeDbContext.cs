@@ -9,5 +9,7 @@ namespace EmployeeManagement.Data
         {
 
         }
+
+        public DbSet<Employees> Employees { get; set; }
     }
 }
