@@ -52,19 +52,19 @@ namespace EmployeeManagement.Repository
 
         public async Task UpdateEmployeeAsync(int id, EmployeeModel employeeModel)
         {
-            var employee = new Employees()
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee != null)
             {
-                Name = employeeModel.Name,
-                Salary = employeeModel.Salary,
-                Location = employeeModel.Location,
-                Email = employeeModel.Email,
-                Department = employeeModel.Department,
-                Qualification = employeeModel.Qualification,
-                UpdatedDate = DateTime.UtcNow
-            };
+                employee.Name = employeeModel.Name;
+                employee.Salary = employeeModel.Salary;
+                employee.Location = employeeModel.Location;
+                employee.Email = employeeModel.Email;
+                employee.Department = employeeModel.Department;
+                employee.Qualification = employeeModel.Qualification;
+                employee.UpdatedDate = DateTime.UtcNow;
 
-            _context.Employees.Update(employee);
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task UpdateEmployeePatchAsync(int id, JsonPatchDocument employeeModel)

@@ -53,9 +53,6 @@ namespace EmployeeManagement.Controllers
                 return BadRequest("Required employee data");
             }
 
-            employeeModel.CreatedDate = DateTime.UtcNow;
-            employeeModel.UpdatedDate = DateTime.UtcNow;    
-
             var id = await _employeeRepository.AddEmployeeAsync(employeeModel);
             if (id == 0)
             {
@@ -66,13 +63,8 @@ namespace EmployeeManagement.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEmployee(int id, [FromBody]EmployeeModel employeeModel)
+        public async Task<IActionResult> UpdateEmployee([FromBody]EmployeeModel employeeModel, [FromRoute]int id)
         {
-            if(id != employeeModel.Id)
-            {
-                return BadRequest("ID mismatch");
-            }
-
             await _employeeRepository.UpdateEmployeeAsync(id, employeeModel);
             return Ok("Employee data updated successfully");
         }
@@ -81,11 +73,6 @@ namespace EmployeeManagement.Controllers
         public async Task<IActionResult> UpdateEmployeePatch(int id, [FromBody] JsonPatchDocument employeeModel)
         {
             await _employeeRepository.UpdateEmployeePatchAsync(id, employeeModel);
-
-            if(employeeModel == null)
-            {
-                return BadRequest("Patch document cannot be null");
-            }
 
             return Ok("Employee data updated successfully");
         }
