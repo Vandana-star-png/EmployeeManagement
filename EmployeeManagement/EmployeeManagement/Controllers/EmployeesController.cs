@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using EmployeeManagement.Data;
 
 namespace EmployeeManagement.Controllers
 {
@@ -47,15 +48,20 @@ namespace EmployeeManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNewEmployee([FromBody]EmployeeModel employeeModel)
         {
-            if (!ModelState.IsValid)
+            if (employeeModel == null)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Required employee data");
             }
 
             employeeModel.CreatedDate = DateTime.UtcNow;
             employeeModel.UpdatedDate = DateTime.UtcNow;    
 
             var id = await _employeeRepository.AddEmployeeAsync(employeeModel);
+            if (id == 0)
+            {
+                return BadRequest("Employee with this email already exists");
+            }
+
             return CreatedAtAction(nameof(GetEmployeeById), new {id = id, controller = "employees"}, id);
         }
 
@@ -68,7 +74,7 @@ namespace EmployeeManagement.Controllers
             }
 
             await _employeeRepository.UpdateEmployeeAsync(id, employeeModel);
-            return Ok();
+            return Ok("Employee data updated successfully");
         }
 
         [HttpPatch("{id}")]
@@ -76,18 +82,17 @@ namespace EmployeeManagement.Controllers
         {
             await _employeeRepository.UpdateEmployeePatchAsync(id, employeeModel);
 
-            return Ok();
+            if(employeeModel == null)
+            {
+                return BadRequest("Patch document cannot be null");
+            }
+
+            return Ok("Employee data updated successfully");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee([FromRoute]int id)
         {
-            var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
-            if(employee == null)
-            {
-                return NotFound($"Employee with ID {id} not found");
-            }
-
             await _employeeRepository.DeleteEmployeeAsync(id);
             return Ok($"Employee with ID {id} deleted successfully");
         }

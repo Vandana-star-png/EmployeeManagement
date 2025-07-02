@@ -44,7 +44,7 @@ namespace EmployeeManagement.Repository
                 CreatedDate = DateTime.Now,
             };
 
-            _context.Employees.AddAsync(employee);
+            _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
             return employeeModel.Id;
@@ -73,13 +73,19 @@ namespace EmployeeManagement.Repository
             if (employee != null)
             {
                 employeeModel.ApplyTo(employee);
+
+                employee.UpdatedDate = DateTime.UtcNow;
+
                 await _context.SaveChangesAsync();
             }
         }
 
         public async Task DeleteEmployeeAsync(int employeeId)
         {
-            var employee = new Employees() { Id = employeeId };
+            var employee = new Employees()
+            { 
+                Id = employeeId 
+            };
 
             _context.Employees.Remove(employee);
 
