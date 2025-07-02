@@ -22,6 +22,12 @@ namespace EmployeeManagement.Controllers
         public async Task<IActionResult> GetAllEmployees()
         {
             var employees = await _employeeRepository.GetAllEmployeesAsync();
+            
+            if(!employees.Any())
+            {
+                return NotFound("No Employees found");
+            }
+
             return Ok(employees);
         }
 
@@ -29,21 +35,27 @@ namespace EmployeeManagement.Controllers
         public async Task<IActionResult> GetEmployeeById([FromRoute]int id)
         {
             var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
+           
             if (employee == null)
             {
-                return NotFound();
+                return NotFound($"Employee with ID {id} not found");
             }
+
             return Ok(employee);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddNewEmployee([FromBody]EmployeeModel employeeModel)
         {
-            var id = await _employeeRepository.AddEmployeeAsync(employeeModel);
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);  
+                return BadRequest(ModelState);
             }
+
+            employeeModel.CreatedDate = DateTime.UtcNow;
+            employeeModel.UpdatedDate = DateTime.UtcNow;    
+
+            var id = await _employeeRepository.AddEmployeeAsync(employeeModel);
             return CreatedAtAction(nameof(GetEmployeeById), new {id = id, controller = "employees"}, id);
         }
 
@@ -70,8 +82,14 @@ namespace EmployeeManagement.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee([FromRoute]int id)
         {
+            var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
+            if(employee == null)
+            {
+                return NotFound($"Employee with ID {id} not found");
+            }
+
             await _employeeRepository.DeleteEmployeeAsync(id);
-            return NotFound();
+            return Ok($"Employee with ID {id} deleted successfully");
         }
     }
 }
