@@ -12,10 +12,10 @@ namespace EmployeeManagement.Repository
 
         Task<int> AddEmployeeAsync(EmployeeModel employeeModel);
 
-        Task UpdateEmployeeAsync(int id, EmployeeModel employeeModel);
+        Task<bool> UpdateEmployeeAsync(int id, EmployeeModel employeeModel);
 
-        Task UpdateEmployeePatchAsync(int id, JsonPatchDocument employeeModel);
+        Task<bool> UpdateEmployeePatchAsync(int id, JsonPatchDocument employeeModel);
 
-        Task DeleteEmployeeAsync(int employeeId);
+        Task<bool> DeleteEmployeeAsync(int employeeId);
     }
 }

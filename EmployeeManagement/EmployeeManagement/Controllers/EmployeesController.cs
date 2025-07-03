@@ -24,7 +24,7 @@ namespace EmployeeManagement.Controllers
         {
             var employees = await _employeeRepository.GetAllEmployeesAsync();
             
-            if(!employees.Any())
+            if(employees == null || !employees.Any())
             {
                 return NotFound("No Employees found");
             }
@@ -48,7 +48,7 @@ namespace EmployeeManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNewEmployee([FromBody]EmployeeModel employeeModel)
         {
-            if (employeeModel == null)
+            if (ModelState.IsValid == false)
             {
                 return BadRequest("Required employee data");
             }
@@ -65,22 +65,39 @@ namespace EmployeeManagement.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee([FromBody]EmployeeModel employeeModel, [FromRoute]int id)
         {
-            await _employeeRepository.UpdateEmployeeAsync(id, employeeModel);
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest("Employee data is required");
+            }
+
+            var isUpdated = await _employeeRepository.UpdateEmployeeAsync(id, employeeModel);
+
+            if (!isUpdated)
+            {
+                return NotFound($"Employee with ID {id} not found");
+            }
             return Ok("Employee data updated successfully");
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateEmployeePatch(int id, [FromBody] JsonPatchDocument employeeModel)
         {
-            await _employeeRepository.UpdateEmployeePatchAsync(id, employeeModel);
-
+            var isUpdated = await _employeeRepository.UpdateEmployeePatchAsync(id, employeeModel);
+            if (!isUpdated)
+            {
+                return NotFound($"Employee with ID {id} not found");
+            }
             return Ok("Employee data updated successfully");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee([FromRoute]int id)
         {
-            await _employeeRepository.DeleteEmployeeAsync(id);
+            var isDeleted = await _employeeRepository.DeleteEmployeeAsync(id);
+            if (!isDeleted)
+            {
+                return NotFound($"Employee with ID {id} not found");
+            }
             return Ok($"Employee with ID {id} deleted successfully");
         }
     }

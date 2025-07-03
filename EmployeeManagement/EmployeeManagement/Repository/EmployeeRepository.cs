@@ -50,7 +50,7 @@ namespace EmployeeManagement.Repository
             return employeeModel.Id;
         }
 
-        public async Task UpdateEmployeeAsync(int id, EmployeeModel employeeModel)
+        public async Task<bool> UpdateEmployeeAsync(int id, EmployeeModel employeeModel)
         {
             var employee = await _context.Employees.FindAsync(id);
             if (employee != null)
@@ -61,13 +61,16 @@ namespace EmployeeManagement.Repository
                 employee.Email = employeeModel.Email;
                 employee.Department = employeeModel.Department;
                 employee.Qualification = employeeModel.Qualification;
-                employee.UpdatedDate = DateTime.UtcNow;
+                employee.UpdatedDate = DateTime.Now;
 
                 await _context.SaveChangesAsync();
+                return true;
             }
+
+            return false;
         }
 
-        public async Task UpdateEmployeePatchAsync(int id, JsonPatchDocument employeeModel)
+        public async Task<bool> UpdateEmployeePatchAsync(int id, JsonPatchDocument employeeModel)
         {
             var employee = await _context.Employees.FindAsync(id);
             if (employee != null)
@@ -77,19 +80,22 @@ namespace EmployeeManagement.Repository
                 employee.UpdatedDate = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
 
-        public async Task DeleteEmployeeAsync(int employeeId)
+        public async Task<bool> DeleteEmployeeAsync(int employeeId)
         {
-            var employee = new Employees()
-            { 
-                Id = employeeId 
-            };
+            var employee = await _context.Employees.FindAsync(employeeId);
+            if(employee == null)
+            {
+                return false;
+            }
 
             _context.Employees.Remove(employee);
-
             await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
