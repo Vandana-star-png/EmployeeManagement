@@ -8,7 +8,7 @@ namespace EmployeeManagement.Helper
     {
         public ApplicationMapper()
         {
-            CreateMap<Employees, EmployeeModel>().ReverseMap();
+            CreateMap<EmployeeRequest, Employee>().ReverseMap();
         }
     }
 }

@@ -6,16 +6,18 @@ namespace EmployeeManagement.Repository
 {
     public interface IEmployeeRepository
     {
-        Task<List<Employees>> GetAllEmployeesAsync();
+        Task<List<Employee>> GetAllEmployeesAsync();
 
-        Task<EmployeeModel> GetEmployeeByIdAsync(int employeeId);
+        Task<Employee> GetEmployeeByIdAsync(int employeeId);
 
-        Task<int> AddEmployeeAsync(EmployeeModel employeeModel);
+        Task<int> AddEmployeeAsync(EmployeeRequest employeeRequest);
 
-        Task<bool> UpdateEmployeeAsync(int id, EmployeeModel employeeModel);
+        Task<Employee> UpdateEmployeeAsync(Employee employee, EmployeeRequest employeeRequest);
 
-        Task<bool> UpdateEmployeePatchAsync(int id, JsonPatchDocument employeeModel);
+        Task<bool> UpdateEmployeePatchAsync(Employee employee, JsonPatchDocument employeeRequest);
 
-        Task<bool> DeleteEmployeeAsync(int employeeId);
+        Task<bool> DeleteEmployeeAsync(Employee employee);
+
+        Task<bool> IsEmployeeExistsAsync(string email);
     }
 }

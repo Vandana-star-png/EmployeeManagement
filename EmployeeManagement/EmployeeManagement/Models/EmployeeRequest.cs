@@ -2,11 +2,8 @@
 
 namespace EmployeeManagement.Models
 {
-    public class EmployeeModel
+    public class EmployeeRequest
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "Name is required")]
         [StringLength(20, ErrorMessage = "Name can't exceed 20 characters")]
         public string Name { get; set; }
@@ -29,9 +26,5 @@ namespace EmployeeManagement.Models
         [Required(ErrorMessage = "Qualification is required")]
         [StringLength(20, ErrorMessage = "Qualification can't exceed 20 characters")]
         public string Qualification { get; set; }
-
-        public DateTime CreatedDate { get; set; }
-
-        public DateTime UpdatedDate { get; set; }
     }
 }
