@@ -72,6 +72,10 @@ namespace EmployeeManagement.Controllers
             {
                 return BadRequest("Employee data is required");
             }
+            else if (await _employeeRepository.IsEmployeeExistsAsync(employeeRequest.Email))
+            {
+                return Conflict("Employee with this email already exists");
+            }
 
             var existingEmployee = await _employeeRepository.GetEmployeeByIdAsync(id);
 
