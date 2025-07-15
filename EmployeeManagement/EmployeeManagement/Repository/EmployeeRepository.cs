@@ -50,21 +50,21 @@ namespace EmployeeManagement.Repository
             return employee;
         }
 
-        public async Task<bool> UpdateEmployeePatchAsync(Employee employee, JsonPatchDocument employeeRequest)
+        public async Task<Employee> UpdateEmployeePatchAsync(Employee employee, JsonPatchDocument employeeRequest)
         {
             employee.UpdatedDate = DateTime.UtcNow;
 
             employeeRequest.ApplyTo(employee);
 
             await _context.SaveChangesAsync();
-            return true;
+            return employee;
         }
 
-        public async Task<bool> DeleteEmployeeAsync(Employee employee)
+        public async Task<Employee> DeleteEmployeeAsync(Employee employee)
         {
             _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();
-            return true;
+            return employee;
         }
 
         public async Task<bool> IsEmployeeExistsAsync(string email)

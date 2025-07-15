@@ -29,18 +29,14 @@ namespace EmployeeManagement.Controllers
             return Ok(employees);
         }
 
-        [HttpGet("{id}", Name = "GetEmployeeById")]
+        [HttpGet("{id:int:min(1)}")]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
-            if(id <= 0)
-            {
-                return BadRequest("Employee ID must be positive number");
-            }
             var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
 
             if (employee == null)
             {
-                return NotFound($"Employee with ID {id} not found");
+                return NotFound($"Employee ID {id} not found");
             }
 
             return Ok(employee);
@@ -49,9 +45,9 @@ namespace EmployeeManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] EmployeeRequest employeeRequest)
         {
-            if (ModelState.IsValid == false)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Required employee data");
+                return BadRequest(ModelState);
             }
             else if (await _employeeRepository.IsEmployeeExistsAsync(employeeRequest.Email))
             {
@@ -62,15 +58,15 @@ namespace EmployeeManagement.Controllers
 
             var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
 
-            return CreatedAtRoute("GetEmployeeById", new { id = id }, employee);
+            return Ok(employee);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] EmployeeRequest employeeRequest)
         {
-            if (ModelState.IsValid == false)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Employee data is required");
+                return BadRequest(ModelState);
             }
             else if (await _employeeRepository.IsEmployeeExistsAsync(employeeRequest.Email))
             {
@@ -81,7 +77,7 @@ namespace EmployeeManagement.Controllers
 
             if (existingEmployee == null)
             {
-                return BadRequest($"Employee with ID {id} not found");
+                return BadRequest($"Employee ID {id} not found");
             }
 
             var updatedEmployee = await _employeeRepository.UpdateEmployeeAsync(existingEmployee, employeeRequest);
@@ -100,14 +96,11 @@ namespace EmployeeManagement.Controllers
             var existingEmployee = await _employeeRepository.GetEmployeeByIdAsync(id);
             if (existingEmployee == null)
             {
-                return NotFound($"Employee with ID {id} not found");
+                return NotFound($"Employee ID {id} not found");
             }
 
             var isUpdated = await _employeeRepository.UpdateEmployeePatchAsync(existingEmployee, employeeRequest);
-            if (!isUpdated)
-            {
-                return StatusCode(500, "An error occurred while saving the updated employee data");
-            }
+
             return Ok("Employee data updated successfully");
         }
 
@@ -117,15 +110,12 @@ namespace EmployeeManagement.Controllers
             var existingEmployee = await _employeeRepository.GetEmployeeByIdAsync(id);
             if (existingEmployee == null)
             {
-                return BadRequest($"Employee with ID {id} not found");
+                return BadRequest($"Employee ID {id} not found");
             }
 
             var isDeleted = await _employeeRepository.DeleteEmployeeAsync(existingEmployee);
-            if (!isDeleted)
-            {
-                return BadRequest($"Failed to delete employee with ID {id}");
-            }
-            return Ok($"Employee with ID {id} deleted successfully");
+
+            return Ok($"Employee ID {id} deleted successfully");
         }
     }
 }

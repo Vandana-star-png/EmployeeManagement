@@ -14,9 +14,9 @@ namespace EmployeeManagement.Repository
 
         Task<Employee> UpdateEmployeeAsync(Employee employee, EmployeeRequest employeeRequest);
 
-        Task<bool> UpdateEmployeePatchAsync(Employee employee, JsonPatchDocument employeeRequest);
+        Task<Employee> UpdateEmployeePatchAsync(Employee employee, JsonPatchDocument employeeRequest);
 
-        Task<bool> DeleteEmployeeAsync(Employee employee);
+        Task<Employee> DeleteEmployeeAsync(Employee employee);
 
         Task<bool> IsEmployeeExistsAsync(string email);
     }
