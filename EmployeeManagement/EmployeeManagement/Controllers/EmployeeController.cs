@@ -54,9 +54,7 @@ namespace EmployeeManagement.Controllers
                 return Conflict("Employee with this email already exists");
             }
 
-            var id = await _employeeRepository.AddEmployeeAsync(employeeRequest);
-
-            var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
+            var employee = await _employeeRepository.AddEmployeeAsync(employeeRequest);
 
             return Ok(employee);
         }
