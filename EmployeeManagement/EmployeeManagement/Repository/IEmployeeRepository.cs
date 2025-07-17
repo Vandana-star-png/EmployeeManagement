@@ -10,7 +10,7 @@ namespace EmployeeManagement.Repository
 
         Task<Employee> GetEmployeeByIdAsync(int employeeId);
 
-        Task<int> AddEmployeeAsync(EmployeeRequest employeeRequest);
+        Task<Employee> AddEmployeeAsync(EmployeeRequest employeeRequest);
 
         Task<Employee> UpdateEmployeeAsync(Employee employee, EmployeeRequest employeeRequest);
 

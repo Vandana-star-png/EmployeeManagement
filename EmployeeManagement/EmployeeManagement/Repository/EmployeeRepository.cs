@@ -29,7 +29,7 @@ namespace EmployeeManagement.Repository
             return employee;
         }
 
-        public async Task<int> AddEmployeeAsync(EmployeeRequest employeeRequest)
+        public async Task<Employee> AddEmployeeAsync(EmployeeRequest employeeRequest)
         {
             var employee = _mapper.Map<Employee>(employeeRequest);
             employee.CreatedDate = DateTime.Now;
@@ -37,7 +37,7 @@ namespace EmployeeManagement.Repository
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
-            return employee.Id;
+            return employee;
         }
 
         public async Task<Employee> UpdateEmployeeAsync(Employee employee, EmployeeRequest employeeRequest)

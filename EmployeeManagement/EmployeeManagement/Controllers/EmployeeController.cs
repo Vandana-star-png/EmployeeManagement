@@ -59,16 +59,12 @@ namespace EmployeeManagement.Controllers
             return Ok(employee);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int:min(1)}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] EmployeeRequest employeeRequest)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-            else if (await _employeeRepository.IsEmployeeExistsAsync(employeeRequest.Email))
-            {
-                return Conflict("Employee with this email already exists");
             }
 
             var existingEmployee = await _employeeRepository.GetEmployeeByIdAsync(id);
