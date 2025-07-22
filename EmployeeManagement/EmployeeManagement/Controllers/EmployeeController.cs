@@ -2,11 +2,17 @@
 using EmployeeManagement.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
+using LazyCache;
+using EmployeeManagement.Caching;
+using EmployeeManagement.Data;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeeManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeRepository _employeeRepository;
@@ -17,16 +23,19 @@ namespace EmployeeManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync([FromQuery]FilteringRequest filteringRequest)
         {
-            var employees = await _employeeRepository.GetAllEmployeesAsync();
+            var employeeResult = await _employeeRepository.GetAllEmloyeeAsync(filteringRequest);
 
-            if (employees == null || !employees.Any())
+            if (!employeeResult.Employees.Any())
             {
                 return NotFound("No Employees found");
             }
 
-            return Ok(employees);
+            AddResponseHeaders(employeeResult);
+
+            return Ok(employeeResult.Employees);
+
         }
 
         [HttpGet("{id:int:min(1)}")]
@@ -60,7 +69,7 @@ namespace EmployeeManagement.Controllers
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] EmployeeRequest employeeRequest)
+        public async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] EmployeeUpdateRequest employeeRequest)
         {
             if (!ModelState.IsValid)
             {
@@ -110,6 +119,13 @@ namespace EmployeeManagement.Controllers
             var isDeleted = await _employeeRepository.DeleteEmployeeAsync(existingEmployee);
 
             return Ok($"Employee ID {id} deleted successfully");
+        }
+
+        private void AddResponseHeaders(EmployeeResponse employees)
+        {
+            Response.Headers.Add("X-Total-Count", employees.TotalCount.ToString());
+
+            Response.Headers.Add("X-Total-Pages", employees.TotalPages.ToString());
         }
     }
 }
